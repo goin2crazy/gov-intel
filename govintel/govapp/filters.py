@@ -1,4 +1,6 @@
 from .models import PeopleAdult, PeopleKid, ComplaintRecord
+from googletrans import Translator
+tr = Translator()
 
 def people_exist(phone_number = None, name = None) -> bool:
     # Query the PeopleAdult model to check if a person with the given phone number and passport card number exists
@@ -29,3 +31,7 @@ def kid_from_adults(adult):
         return kids.all()
     else: 
         return None
+    
+def translate(text): 
+    translation = tr.translate(text, dest='eng')
+    return translation.text
