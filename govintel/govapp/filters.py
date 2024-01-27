@@ -1,4 +1,4 @@
-from .models import PeopleAdult, ComplaintRecord
+from .models import PeopleAdult, PeopleKid, ComplaintRecord
 
 def people_exist(phone_number = None, name = None) -> bool:
     # Query the PeopleAdult model to check if a person with the given phone number and passport card number exists
@@ -20,5 +20,12 @@ def get_complient(adult):
     complient = ComplaintRecord.objects.filter(adult=adult)
     if complient.exists(): 
         return complient.all()
+    else: 
+        return None
+
+def kid_from_adults(adult): 
+    kids = PeopleKid.objects.filter(adult=adult).all() 
+    if kids.exists(): 
+        return kids.all()
     else: 
         return None

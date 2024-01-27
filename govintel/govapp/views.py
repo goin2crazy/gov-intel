@@ -2,16 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .forms import SignInForm  # Create a form for signing in
-from .filters import people_exist, get_adult, get_complient
+from .filters import people_exist, get_adult, get_complient, kid_from_adults
 
 from .forms import ComplaintRecordForm
 from django.contrib.auth.decorators import login_required
 
-from .models import ComplaintRecord 
+from .models import ComplaintRecord, PeopleAdult, PeopleKid
 
 family_reg = ''
 singin = ''
-home = ''
+home = 'index.html'
 add_complaint_record = ''
 com_lst = ''
 
@@ -54,6 +54,27 @@ def complaint_list(request):
         return render(request, com_lst, {'complaints': complaint_lst})
     else: 
         return redirect('home') 
+    
+@login_required
+def users_lst(request): 
+    if request.user.status == 'adm':  
+        context = {'adults': []}
+
+        people_adult = PeopleAdult.objects.all()
+
+        for obj in people_adult: 
+            people_context = {'adult': obj} 
+
+            people_kids = kid_from_adults(obj)
+            if people_kids != None: 
+                people_context['kids'] = people_kids
+
+            context['adults'].append(people_context)
+
+        return render(request, com_lst, {'peoples': context})
+    else: 
+        return redirect('home') 
+        
 
 
 # FOR USErs
