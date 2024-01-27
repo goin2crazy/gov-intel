@@ -34,5 +34,22 @@ class ComplaintRecord(models.Model):
     adult = models.ForeignKey(PeopleAdult, on_delete=models.CASCADE)
     datetime = models.DateTimeField()
 
+    complaint_type = [
+        ('ChildrensRights', "Children's Rights"),
+        ('WomensRights', "Women's Rights"),
+        ('Disability', 'Disability'),
+        ('Violence', 'Violence'),
+        ('Divorce', 'Divorce'),
+    ]
+
+    rating = [
+        ('NotSerious', 'Not Serious'),
+        ('Serious', 'Serious'),
+        ('Critical', 'Critical'),
+    ]
+
+    type = models.CharField(max_length=20, choices=complaint_type)
+    rating = models.CharField(max_length=20, choices=complaint_type)
+
     def __str__(self):
         return f"Complaint at {self.location} on {self.datetime}"

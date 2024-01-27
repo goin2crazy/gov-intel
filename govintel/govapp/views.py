@@ -2,7 +2,16 @@ from django.shortcuts import render, redirect
 from django.contrib.auth import authenticate, login
 from django.contrib import messages
 from .forms import SignInForm  # Create a form for signing in
-from .filters import people_exist, get_adult, get_complient, kid_from_adults, translate
+from .filters import (
+                      people_exist, 
+                      get_adult, 
+                      get_complient, 
+                      kid_from_adults, 
+                      translate,
+                      filter_spam, 
+                      problem_rate, 
+                      problem_class,
+                      )
 
 from .forms import ComplaintRecordForm
 from django.contrib.auth.decorators import login_required
@@ -84,12 +93,18 @@ def add_complaint_record(request):
         form = ComplaintRecordForm(request.POST)
 
         if form.is_valid():
-            complaint_record = form.save(commit=False)
-            complaint_record.text = translate(complaint_record.text)
+            if filter_spam(form.cleaned_data['text']): 
+                complaint_record = form.save(commit=False)
 
-            complaint_record.adult = get_adult(request.user)  # Assign the logged-in user to the complaint record
-            complaint_record.save()
-            return redirect('home')  # Replace 'complaint_list' with the URL or view name for the complaints list page
+                complaint_record.text = translate(complaint_record.text)
+
+                complaint_record.complaint_type = problem_class(complaint_record.text)
+
+                complaint_record.rating = problem_rate(complaint_record.text)
+
+                complaint_record.adult = get_adult(request.user)  # Assign the logged-in user to the complaint record
+                complaint_record.save()
+                return redirect('home')  # Replace 'complaint_list' with the URL or view name for the complaints list page
 
     else:
         form = ComplaintRecordForm()
