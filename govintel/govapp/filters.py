@@ -30,9 +30,11 @@ with open(rating_fp, 'rb') as model_file:
     # model_file.close()
 
 print('Loading fuctions')
+
 def filter_spam(text): 
-    is_spam = spam_model.predict([text])[0]
-    if int(is_spam) == 1: 
+    is_spam = spam_model.predict([f"Subject: {text}"])[0]
+    print(f"{text} is spam with {is_spam * 100}%")
+    if is_spam > 0.4: 
         return False
     else: 
         return True
@@ -40,39 +42,16 @@ def filter_spam(text):
 def problem_rate(text):
     rate = rating_model.predict([text])[0]
     if rate > 2.: 
-        return 'Critical'
+        return 3
     elif rate > 1 and rate < 2:
-        return 'Serious' 
+        return 2 
     elif rate < 1: 
-        return 'Not Serious'
-
-def  problem_class(text): 
-    pred  = ptype_model([text])
-    revert = ptype_lencoder.revert(pred)
-    return revert[0]
-
-def people_exist(phone_number = None, name = None) -> bool:
-    # Query the PeopleAdult model to check if a person with the given phone number and passport card number exists
-    person_exists = PeopleAdult.objects.filter(phone_number=phone_number, name=name).exists()
-
-    return person_exists
-
-def get_adult(user): 
-    phone_number = user.phone_number
-    name = user.name
-
-    person = PeopleAdult.objects.filter(phone_number=phone_number, name=name)
-    if person.exists(): 
-        return person[0]
-    else: 
-        return None 
-
-def get_complient(adult): 
-    complient = ComplaintRecord.objects.filter(adult=adult)
-    if complient.exists(): 
-        return complient.all()
-    else: 
-        return None
+        return 1
+    
+def problem_class(text):
+    pred = ptype_model.predict([text])
+    reverted = ptype_lencoder.inverse_transform(pred)
+    return reverted[0]
 
 def kid_from_adults(adult): 
     kids = PeopleKid.objects.filter(adult=adult).all() 
@@ -82,5 +61,5 @@ def kid_from_adults(adult):
         return None
     
 def translate(text): 
-    translation = tr.translate(text, dest='eng')
+    translation = tr.translate(text, dest='en')
     return translation.text

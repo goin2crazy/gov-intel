@@ -1,0 +1,144 @@
+  <!DOCTYPE html>
+  <html lang="en">
+
+  <head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.2/css/all.min.css" />
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+    <title>Welcome Admin</title>
+    <style>
+      .icon {
+          width: 20px;
+          height: 20px;
+          background-color: red;
+      }
+  </style>
+  </head>
+
+  <body class="bg-gradient">
+    <nav class="navbar">
+      <div class="container-fluid">
+        <a href="panel.html" class="navbar-brand">
+          <h2>Govintl</h2>
+        </a>
+        <form class="d-flex" role="search">
+          <input type="search" class="form-control me-2" placeholder="Search...">
+          <button type="button" class="btn btn-warning">Search</button>
+        </form>
+      </div>
+    </nav>
+
+    <div class="row">
+      <div class="col-3 dashboard ">
+        <div class="accordion" id="accordionExample">
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingOne">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseOne" aria-expanded="false" aria-controls="collapseOne">
+                Сomplaints
+              </button>
+            </h2>
+            <div id="collapseOne" class="accordion-collapse collapse" aria-labelledby="headingOne"
+              data-bs-parent="#accordionExample">
+              <div class="accordion-body btn-links">
+               <p><a class="link" href="panel.html">Divorce</a></p>
+               <p><a class="link" href="panel.html">Violence </a></p>
+               <p><a class="link" href="panel.html">Disability</a></p>
+               <p><a class="link" href="panel.html">Women's Rights</a></p>
+               <p><a class="link" href="panel.html">Children's Rights</a></p>
+              </div>
+            </div>
+          </div>
+          <div class="accordion-item">
+            <h2 class="accordion-header" id="headingTwo">
+              <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse"
+                data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                Add
+              </button>
+            </h2>
+            <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo"
+              data-bs-parent="#accordionExample">
+              <div class="accordion-body btn-links">
+                <p> <a href="place.html">Home</a></p>
+                <p><a href="PeopleAdult.html">Adult</a></p>
+                <a href="add.html">Kids</a>
+                
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-9">
+        <h2 class="p-2">Сomplaints</h2>
+
+        <div class="icons">
+          <button type="button" class="btn bt-midnight" data-bs-toggle="modal" data-bs-target="#exampleModal"><i
+              class="fa-solid fa-plus"></i></button>
+         
+        </div>
+
+
+        <table class="table">
+          <thead>
+            <tr>
+              <th scope="col">ID</th>
+              <th scope="col">SNP</th>
+              <th scope="col">Address</th>
+              <th scope="col">type of problem</th>
+              <th scope="col">criticality</th>
+              <th scope="col">time</th>
+            </tr>
+            <tr>
+              <th scope="row">1</th>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td>
+                <div class="icon" id="icon" onclick="changeColor()"></div>
+              </td>
+              <td></td>
+            </tr>
+          </thead>
+          <tbody class="table-datas">
+            
+          </tbody>
+        </table>
+
+        <!-- Button trigger modal -->
+
+        <!-- Modal -->
+        
+
+      </div>
+
+    </div>
+
+
+
+    <!-- JavaScript Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+      let data = document.querySelector('.table-datas');
+      let html = ''
+      for(let i = 0; i < 1; i++){
+        html+=`<tr>
+              <th scope="row">1</th>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+              <td></td>
+            </tr>`
+      }
+
+      data.innerHTML = html
+    </script>
+     <script src="icon.js"></script>
+  </body>
+
+  </html>

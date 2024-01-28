@@ -1,0 +1,34 @@
+{% load static %}
+<div class="container height-100">
+  <a href="panel.html" class="navbar-brand">
+    <h2 class="mb-4 logo">Complaint Table</h2>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="{% static 'style.css' %}" rel="stylesheet">
+  </a>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">ID</th>
+        <th scope="col">Address</th>
+        <th scope="col">Description</th>
+        <th scope="col">Type of Problem</th>
+        <th scope="col">Criticality</th>
+        <th scope="col">Time</th>
+      </tr>
+    </thead>
+    <tbody class="table-datas">
+      {% for complaint_type, complaints in context.items %}
+        {% for complaint in complaints %}
+          <tr>
+            <th scope="row">{{ complaint.id }}</th>
+            <td>{{ complaint.location }}</td>
+            <td>{{ complaint.text }}</td>
+            <td>{{ complaint.type }}</td>
+            <td>{{ complaint.rating }}</td>
+            <td>{{ complaint.datetime }}</td>
+          </tr>
+        {% endfor %}
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

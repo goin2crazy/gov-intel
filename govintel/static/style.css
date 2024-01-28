@@ -1,0 +1,128 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    text-decoration: none!important;
+    --midnight: #3b383b!important;
+    --midnight-light-shade-1: #94a3b8!important;
+    --midnight-light-shade-2: #ffffff!important;
+    /* --nugget: #BB9926!important; */
+    --nugget: #f5e239!important;
+    --wht: rgb(231, 228, 228)!important;
+}
+
+.wlight {
+    color: var(--wht);
+}
+.link{
+    text-decoration: none;
+}
+
+.bg-gradient {
+    /* background: linear-gradient(25deg, #3d35de, #7e3fb3, #9b4d88, #ad5c5d)!important; */
+    background: var(--midnight-light-shade-2);
+}
+
+.container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+.height-100 {
+    min-height: 40vh;
+}
+
+.container .logo {
+    color: var(--nugget);
+}
+
+
+.container form {
+    width: 400px;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px var(--midnight);
+    background: var(--midnight);
+}
+
+.container form input, .container form input:focus {
+    background: transparent;
+    color: var(--midnight-light-shade-1);
+}
+
+.container form button{
+    background: var(--nugget);
+}
+
+.container form button:hover, .container form button:focus {
+    color: #fff;
+}
+
+.container form label {
+    color: #fff;
+}
+.dropdown-menu {
+    top: 50px!important;
+    left: unset!important;
+    right: 0!important;
+
+}
+
+/* Admin page start */
+
+.navbar {
+    background: var(--midnight);
+}
+
+.navbar .navbar-brand {
+    color: var(--nugget);
+}
+
+.navbar form input {
+    background: transparent;
+}
+
+.dashboard {
+    padding: 10px;
+    padding-left: 20px;
+    height: 90vh;
+}
+
+.accordion button, .accordion-item {
+    background: var(--midnight);
+    color: #fff;
+}
+
+.accordion-button.collapsed::after {
+    filter: invert(1);
+}
+
+.btn-links {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.btn-links a {
+    padding: 10px;
+    text-align: center;
+}
+
+.accordion-body {
+    padding: unset;
+}
+
+.bt-midnight, .bt-midnight:focus {
+    color: var(--wht);
+    background: var(--midnight);
+}
+
+table thead {
+    color: var(--nugget);
+}
+
+table tbody {
+    color: var(--midnight);
+} 

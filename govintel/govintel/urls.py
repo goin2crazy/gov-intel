@@ -22,3 +22,9 @@ urlpatterns = [
     path('', include('govapp.urls'))
 ]
 
+from django.conf import settings
+from django.conf.urls.static import static
+
+# Serve static files during development
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)

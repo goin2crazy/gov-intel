@@ -1,18 +1,18 @@
 from django.urls import path
-from .views import (
-    regfamily,
-    complaint_list,
-    users_lst,
-    add_complaint_record,
-    loginuser,
-    homepage,
-)
+from .views import *
 
 urlpatterns = [
-    path('regfamily/', regfamily, name='regfamily'),
-    path('complaint_list/', complaint_list, name='complaint_list'),
-    path('users_lst/', users_lst, name='users_lst'),
-    path('add_complaint_record/', add_complaint_record, name='add_complaint_record'),
-    path('loginuser/', loginuser, name='loginuser'),
-    path('', homepage, name='home'),
+    path('add/', add_complaint_record, name='add_complaint'),
+    path('success/', successp, name='success_page'),
+
+    path('accounts/login/', login_user, name='login_user'),
+    path('', homepage, name='homepage'),
+    
+
+]
+
+urlpatterns += [
+    path('complaints/', complaint_list, name='complients_list'),
+    path('adults/', users_list, name='adults_lists'),
+    path('complaint-list-class/', ComplaintListView.as_view(), name='complaint_list_class'),
 ]

@@ -1,147 +1,147 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from .forms import SignInForm  # Create a form for signing in
-from .filters import (
-                      people_exist, 
-                      get_adult, 
-                      get_complient, 
-                      kid_from_adults, 
-                      translate,
-                      filter_spam, 
-                      problem_rate, 
-                      problem_class,
-                      )
-
-from .forms import ComplaintRecordForm
 from django.contrib.auth.decorators import login_required
-
+from django.contrib.auth import authenticate, login
+from .forms import SignInForm, ComplaintRecordForm
 from .models import ComplaintRecord, PeopleAdult, PeopleKid
 
-family_reg = ''
-singin = ''
-home = 'index.html'
-add_complaint_record = ''
-com_lst = ''
 
-from .forms import LivinPlaceForm, PeopleAdultForm, PeopleKidForm
+from .filters import (kid_from_adults, 
+                      
+                      translate,
+                      filter_spam,
+                      problem_class, 
+                      problem_rate)
 
-# FOR GOVERMenT workers 
-@login_required
-def regfamily(request):
-    if request.user.status == 'adm': 
-        if request.method == 'POST':
-            livin_space = LivinPlaceForm(request.POST)
-            people_adult = PeopleAdultForm(request.POST, prefix='adult')
-            people_kid = PeopleKidForm(request.POST, prefix='kid')
+from django.contrib.auth.decorators import user_passes_test
 
-            if people_kid.is_valid(): 
-                people_kid.save()
+def is_admin(user):
+    return user.is_authenticated and user.is_staff
 
-            if livin_space.is_valid() and people_adult.is_valid():
-                livin_space.save()
-                people_adult.save()
-                return redirect('succes_reg') 
-        else:
-            livin_space = LivinPlaceForm()
-            people_adult = PeopleAdultForm(prefix='adult')
-            people_kid = PeopleKidForm(prefix='kid')
-    else: 
-        return redirect('home')
+def successp(request): 
+    return render(request, 'success.html', )
 
-    return render(request, family_reg, {
-        'living_place_form': livin_space,
-        'people_adult_form': people_adult,
-        'people_kid_form': people_kid,
-    })
 
-@login_required
+from django.shortcuts import render
+from .models import ComplaintRecord
+from django.contrib.auth.decorators import user_passes_test
+from django.utils.decorators import method_decorator
+from django.views import View
+# Apply the decorator to complaint_list and users_list
+@user_passes_test(is_admin)
 def complaint_list(request):
-    if request.user.status == 'adm': 
-        complaint_lst = ComplaintRecord.objects.all()
+    complaint_types = ['Divorce', 'Violence', 'Disability', "Women's Rights", "Children's Rights"]
+    complaint_type_ = ['divorce', 'violence', 'disability', "women_rights", "children_rights"]
 
-        return render(request, com_lst, {'complaints': complaint_lst})
-    else: 
-        return redirect('home') 
+    context = {}
+
+    for t, t_ in zip(complaint_types, complaint_type_): 
+        complaints = ComplaintRecord.objects.filter(type=t)
+        complaint_lst = complaints.order_by('rating').all()
+
+        context[t_] = complaint_lst
+
+    return render(request, 'complaints.html', {'context': context})
+
+class ComplaintListView(View):
+    @method_decorator(user_passes_test(is_admin))
+    def get(self, request, *args, **kwargs):
+        return complaint_list(request)
     
-@login_required
-def users_lst(request): 
-    if request.user.status == 'adm':  
-        context = {'adults': []}
+@user_passes_test(is_admin)
+def users_list(request): 
+    context = {'adults': []}
+    people_adult = PeopleAdult.objects.all()
 
-        people_adult = PeopleAdult.objects.all()
+    for obj in people_adult: 
+        people_context = {'adult': obj} 
+        people_kids = kid_from_adults(obj)
 
-        for obj in people_adult: 
-            people_context = {'adult': obj} 
+        if people_kids:
+            people_context['kids'] = people_kids
 
-            people_kids = kid_from_adults(obj)
-            if people_kids != None: 
-                people_context['kids'] = people_kids
+        context['adults'].append(people_context)
 
-            context['adults'].append(people_context)
+    return render(request, 'complaint_list.html', {'peoples': context})
 
-        return render(request, com_lst, {'peoples': context})
-    else: 
-        return redirect('home') 
-        
-
-
-# FOR USErs
 @login_required
 def add_complaint_record(request):
     if request.method == 'POST':
         form = ComplaintRecordForm(request.POST)
-
+        print(form.is_valid())
         if form.is_valid():
+
             if filter_spam(form.cleaned_data['text']): 
+                
+                print('not spam')
                 complaint_record = form.save(commit=False)
 
                 complaint_record.text = translate(complaint_record.text)
-
-                complaint_record.complaint_type = problem_class(complaint_record.text)
-
+                complaint_record.type = problem_class(complaint_record.text)
                 complaint_record.rating = problem_rate(complaint_record.text)
 
-                complaint_record.adult = get_adult(request.user)  # Assign the logged-in user to the complaint record
+                complaint_record.adult = PeopleAdult.objects.get(user = request.user)
                 complaint_record.save()
-                return redirect('home')  # Replace 'complaint_list' with the URL or view name for the complaints list page
 
+                return redirect('success_page')  # Replace 'success_page' with your actual success page name            
+        return redirect('homepage')
     else:
         form = ComplaintRecordForm()
 
-    return render(request, add_complaint_record, {'form': form})
+    return render(request, 'add_complaint.html', {'form': form})
 
-def loginuser(request): 
+
+def login_user(request): 
     if request.method == 'POST':
-        signin_form = SignInForm(request.POST)
-
-        if signin_form.is_valid():
-            phone_number = signin_form.cleaned_data['phone_number']
-            name = signin_form.cleaned_data['name']
-
-            if people_exist(phone_number, name):
-                user = authenticate(request, phone_number=phone_number, name=name, status = 'def')
-
+        form = SignInForm(request.POST)
+        if form.is_valid():
+            print('form is valid')
+            username = form.cleaned_data['username']
+            password = form.cleaned_data['password']
+            user = authenticate(request, username=username, password=password)
+            if user is not None:
                 login(request, user)
-                messages.success(request, 'Successfully signed in.')
-                return redirect('succes_reg')  # Redirect to the dashboard or another page upon successful sign-in
-            else:
-                messages.error(request, 'Invalid phone number or name')
-
+                return redirect('success_page')  # replace 'homepage' with your actual homepage name
     else:
-        signin_form = SignInForm()
+        form = SignInForm()
 
-    return render(request, singin, {'signin_form': signin_form})
-
-def homepage(request): 
-    try: 
-        adult = get_adult(request.user)
-        if request.user.status == 'adm': 
-            return redirect('complient_list')
-        else: 
-            user_complients = get_complient(adult)
-            return render(request, home, {'complients': user_complients})
-    except: 
-        return render(request, home, {})
+    return render(request, 'singin.html', {'form': form})
 
 
+from django.shortcuts import render
+import matplotlib.pyplot as plt
+from io import BytesIO
+import base64
+
+from django.db import models
+
+def generate_histogram(data, title, xlabel, ylabel):
+    plt.bar(data.keys(), data.values())
+    plt.title(title)
+    plt.xlabel(xlabel)
+    plt.ylabel(ylabel)
+
+    # Save the plot to a BytesIO object
+    image_stream = BytesIO()
+    plt.savefig(image_stream, format='png')
+    plt.close()
+
+    # Convert the BytesIO object to a base64-encoded string
+    image_stream.seek(0)
+    image_data = base64.b64encode(image_stream.read()).decode('utf-8')
+
+    return image_data
+
+def homepage(request):
+    # Assuming complaints is a queryset of ComplaintRecord objects
+    # complaints = ComplaintRecord.objects.all()
+
+    # # Generate histogram data for rating
+    # rating_counts = dict(complaints.values_list('rating').annotate(count=models.Count('id')))
+    # rating_histogram = generate_histogram(rating_counts, 'Rating Histogram', 'Rating', 'Count')
+    # plt.close()
+    # # Generate histogram data for type
+    # type_counts = dict(complaints.values_list('type').annotate(count=models.Count('id')))
+    # type_histogram = generate_histogram(type_counts, 'Type Histogram', 'Type', 'Count')
+    # plt.close()
+
+    return render(request, 'index.html', {})
